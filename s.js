@@ -11,7 +11,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let width, height;
     let animationFrameId;
-    const isMobile = () => window.innerWidth < 768;
 
     function resizeCanvas() {
         width = canvas.width = window.innerWidth;
@@ -35,17 +34,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- THEME: Default / Clear / Cloudy (Constellation) ---
-    function initConstellationTheme(particleCount) {
-        particleCount = particleCount || (isMobile() ? 40 : 150);
+    function initConstellationTheme(particleCount = 150) {
         stopCurrentAnimation();
         let particles = [];
         class Particle {
             constructor() {
                 this.x = Math.random() * width;
                 this.y = Math.random() * height;
-                this.vx = (Math.random() - 0.5) * 0.3;
-                this.vy = (Math.random() - 0.5) * 0.3;
-                this.size = Math.random() * 1.5 + 0.5;
+                this.vx = (Math.random() - 0.5) * 0.5;
+                this.vy = (Math.random() - 0.5) * 0.5;
+                this.size = Math.random() * 2 + 1;
                 this.hue = Math.random() * 360;
             }
             draw() {
@@ -75,7 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
         for (let i = 0; i < particleCount; i++) particles.push(new Particle());
 
         function connect() {
-            const radiusSq = (isMobile() ? 90 : 110) ** 2;
+            const radiusSq = 110 * 110;
             for (let a = 0; a < particles.length; a++) {
                 for (let b = a + 1; b < particles.length; b++) {
                     const distSq = ((particles[a].x - particles[b].x) ** 2) + ((particles[a].y - particles[b].y) ** 2);
@@ -106,13 +104,13 @@ document.addEventListener('DOMContentLoaded', () => {
     function initRainTheme(heavy = false) {
         stopCurrentAnimation();
         let drops = [];
-        const dropCount = isMobile() ? (heavy ? 150 : 75) : (heavy ? 500 : 250);
+        const dropCount = heavy ? 500 : 250;
         for (let i = 0; i < dropCount; i++) {
             drops.push({
                 x: Math.random() * width,
                 y: Math.random() * height,
-                len: Math.random() * 15 + 5,
-                speed: Math.random() * 4 + 2
+                len: Math.random() * 20 + 10,
+                speed: Math.random() * 5 + 2
             });
         }
         function animate() {
@@ -140,12 +138,12 @@ document.addEventListener('DOMContentLoaded', () => {
     function initSnowTheme() {
         stopCurrentAnimation();
         let flakes = [];
-        const flakeCount = isMobile() ? 80 : 250;
+        const flakeCount = 250;
         for (let i = 0; i < flakeCount; i++) {
             flakes.push({
                 x: Math.random() * width,
                 y: Math.random() * height,
-                r: Math.random() * 2.5 + 1,
+                r: Math.random() * 3 + 1,
                 speed: Math.random() * 1 + 0.5,
                 drift: Math.random() * 2 - 1
             });
@@ -205,12 +203,31 @@ document.addEventListener('DOMContentLoaded', () => {
     function applyWeatherTheme(code) {
         console.log(`Applying theme for weather code: ${code}`);
         // WMO Weather interpretation codes
-        if (code === 0) initConstellationTheme(isMobile() ? 30 : 100); // Clear
-        else if (code >= 1 && code <= 3) initConstellationTheme(isMobile() ? 50 : 200); // Cloudy
+        if (code === 0) initConstellationTheme(100); // Clear
+        else if (code >= 1 && code <= 3) initConstellationTheme(200); // Cloudy
         else if ((code >= 51 && code <= 67) || (code >= 80 && code <= 82)) initRainTheme(code > 65 || code > 80); // Rain
         else if (code >= 71 && code <= 77) initSnowTheme(); // Snow
         else if (code >= 95 && code <= 99) initThunderstormTheme(); // Thunderstorm
         else initConstellationTheme(); // Default for Fog, etc.
+    }
+
+    // --- GYROSCOPE TILT EFFECT ---
+    function handleOrientation(event) {
+        const card = document.querySelector('.card');
+        if (!card) return;
+
+        const { beta, gamma } = event;
+
+        // Clamp values for a subtle effect
+        const tiltX = Math.min(20, Math.max(-20, beta)); // Front-back tilt
+        const tiltY = Math.min(20, Math.max(-20, gamma)); // Left-right tilt
+
+        card.style.transform = `perspective(1000px) rotateX(${-tiltX}deg) rotateY(${tiltY}deg) scale3d(1, 1, 1)`;
+    }
+
+    // Check for device support and add listener
+    if (window.DeviceOrientationEvent && 'ontouchstart' in window) {
+        window.addEventListener('deviceorientation', handleOrientation);
     }
 
     getWeatherTheme();
