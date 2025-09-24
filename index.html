@@ -30,16 +30,17 @@
 
     .card {
       position: relative;
-      z-index: 10; /* Lower z-index than before */
-      width: 380px; /* Slightly wider */
+      z-index: 10;
+      width: 90%;
+      max-width: 380px;
+      margin: 20px;
       padding: 40px 30px;
-      border-radius: 25px; /* More rounded */
-      background: rgba(20, 20, 20, 0.6); /* Darker glassmorphism */
+      border-radius: 25px;
+      background: rgba(20, 20, 20, 0.6);
       backdrop-filter: blur(15px);
       box-shadow: 0 8px 32px rgba(0,0,0,0.3);
       border: 1px solid rgba(255,255,255,0.1);
       text-align: center;
-      /* New border animation */
       border-image: linear-gradient(135deg, #00c6ff, #0072ff, #f09, #ff0) 1;
       animation: animated-border 5s ease-in-out infinite;
     }
@@ -52,15 +53,14 @@
         100% { border-image: linear-gradient(315deg, #00c6ff, #0072ff, #f09, #ff0) 1; }
     }
 
-
     .avatar {
       width: 120px;
       height: 120px;
       margin: 0 auto 20px;
       border-radius: 50%;
       overflow: hidden;
-      border: 4px solid transparent; /* Make border transparent */
-      background: linear-gradient(45deg, #00c6ff, #0072ff, #f09, #ff0); /* Gradient border */
+      border: 4px solid transparent;
+      background: linear-gradient(45deg, #00c6ff, #0072ff, #f09, #ff0);
       background-clip: padding-box;
       padding: 4px;
       box-shadow: 0 0 25px rgba(0, 198, 255, 0.5);
@@ -76,12 +76,12 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
-      border-radius: 50%; /* Apply radius to image itself */
+      border-radius: 50%;
     }
 
     h1 {
       color: #fff;
-      font-size: 1.5rem; /* Slightly larger */
+      font-size: 1.5rem;
       margin-bottom: 25px;
       font-weight: 700;
       text-shadow: 0 0 10px rgba(255,255,255,0.3);
@@ -90,36 +90,34 @@
     .link-btn {
       display: flex;
       align-items: center;
-      background: rgba(255, 255, 255, 0.1); /* More transparent */
+      background: rgba(255, 255, 255, 0.1);
       padding: 14px 20px;
       border-radius: 12px;
       margin-bottom: 16px;
       text-decoration: none;
-      color: #fff; /* White text */
+      color: #fff;
       font-weight: 600;
       transition: all 0.3s ease;
       border: 1px solid rgba(255, 255, 255, 0.1);
     }
 
     .link-btn:hover {
-      transform: translateY(-3px) scale(1.05); /* Lift effect */
+      transform: translateY(-3px) scale(1.05);
       box-shadow: 0 8px 25px rgba(0,0,0,0.3);
       color: #fff;
     }
 
-    /* Brand colors on hover */
     .link-btn.facebook:hover { background: #1877F2; border-color: #1877F2; }
-    .link-btn.locket:hover { background: #ffc107; color: #000; border-color: #ffc107; } /* Locket is yellow-ish */
+    .link-btn.locket:hover { background: #ffc107; color: #000; border-color: #ffc107; }
     .link-btn.tiktok:hover { background: #000; border-color: #ff0050; box-shadow: 0 0 15px #ff0050; }
     .link-btn.instagram:hover { background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); border-color: #dc2743; }
     .link-btn.phone:hover { background: #25D366; border-color: #25D366; }
 
-
     .link-btn i, .link-btn img {
       width: 26px;
       height: 26px;
-      margin-right: 15px; /* More space */
-      font-size: 24px; /* Larger icons */
+      margin-right: 15px;
+      font-size: 24px;
       transition: transform 0.3s;
     }
 
@@ -132,7 +130,6 @@
       object-fit: cover;
     }
 
-    /* Make Locket icon monochrome by default */
     .link-btn.locket img {
       filter: grayscale(1) brightness(1.5);
       transition: filter 0.3s ease;
@@ -140,6 +137,12 @@
 
     .link-btn.locket:hover img {
       filter: none;
+    }
+
+    @media (max-width: 420px) {
+      .card {
+        padding: 30px 20px;
+      }
     }
   </style>
 </head>

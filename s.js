@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let width, height;
     let animationFrameId;
+    const isMobile = () => window.innerWidth < 768;
 
     function resizeCanvas() {
         width = canvas.width = window.innerWidth;
@@ -34,16 +35,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- THEME: Default / Clear / Cloudy (Constellation) ---
-    function initConstellationTheme(particleCount = 150) {
+    function initConstellationTheme(particleCount) {
+        particleCount = particleCount || (isMobile() ? 40 : 150);
         stopCurrentAnimation();
         let particles = [];
         class Particle {
             constructor() {
                 this.x = Math.random() * width;
                 this.y = Math.random() * height;
-                this.vx = (Math.random() - 0.5) * 0.5;
-                this.vy = (Math.random() - 0.5) * 0.5;
-                this.size = Math.random() * 2 + 1;
+                this.vx = (Math.random() - 0.5) * 0.3;
+                this.vy = (Math.random() - 0.5) * 0.3;
+                this.size = Math.random() * 1.5 + 0.5;
                 this.hue = Math.random() * 360;
             }
             draw() {
@@ -73,7 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
         for (let i = 0; i < particleCount; i++) particles.push(new Particle());
 
         function connect() {
-            const radiusSq = 110 * 110;
+            const radiusSq = (isMobile() ? 90 : 110) ** 2;
             for (let a = 0; a < particles.length; a++) {
                 for (let b = a + 1; b < particles.length; b++) {
                     const distSq = ((particles[a].x - particles[b].x) ** 2) + ((particles[a].y - particles[b].y) ** 2);
@@ -104,13 +106,13 @@ document.addEventListener('DOMContentLoaded', () => {
     function initRainTheme(heavy = false) {
         stopCurrentAnimation();
         let drops = [];
-        const dropCount = heavy ? 500 : 250;
+        const dropCount = isMobile() ? (heavy ? 150 : 75) : (heavy ? 500 : 250);
         for (let i = 0; i < dropCount; i++) {
             drops.push({
                 x: Math.random() * width,
                 y: Math.random() * height,
-                len: Math.random() * 20 + 10,
-                speed: Math.random() * 5 + 2
+                len: Math.random() * 15 + 5,
+                speed: Math.random() * 4 + 2
             });
         }
         function animate() {
@@ -138,12 +140,12 @@ document.addEventListener('DOMContentLoaded', () => {
     function initSnowTheme() {
         stopCurrentAnimation();
         let flakes = [];
-        const flakeCount = 250;
+        const flakeCount = isMobile() ? 80 : 250;
         for (let i = 0; i < flakeCount; i++) {
             flakes.push({
                 x: Math.random() * width,
                 y: Math.random() * height,
-                r: Math.random() * 3 + 1,
+                r: Math.random() * 2.5 + 1,
                 speed: Math.random() * 1 + 0.5,
                 drift: Math.random() * 2 - 1
             });
@@ -203,66 +205,13 @@ document.addEventListener('DOMContentLoaded', () => {
     function applyWeatherTheme(code) {
         console.log(`Applying theme for weather code: ${code}`);
         // WMO Weather interpretation codes
-        if (code === 0) initConstellationTheme(100); // Clear
-        else if (code >= 1 && code <= 3) initConstellationTheme(200); // Cloudy
+        if (code === 0) initConstellationTheme(isMobile() ? 30 : 100); // Clear
+        else if (code >= 1 && code <= 3) initConstellationTheme(isMobile() ? 50 : 200); // Cloudy
         else if ((code >= 51 && code <= 67) || (code >= 80 && code <= 82)) initRainTheme(code > 65 || code > 80); // Rain
         else if (code >= 71 && code <= 77) initSnowTheme(); // Snow
         else if (code >= 95 && code <= 99) initThunderstormTheme(); // Thunderstorm
         else initConstellationTheme(); // Default for Fog, etc.
     }
 
-    // --- THEME SWITCHER FOR TESTING ---
-    function addThemeSwitcher() {
-        const styles = `
-            #theme-switcher {
-                position: fixed;
-                bottom: 10px;
-                left: 10px;
-                z-index: 1000;
-                display: flex;
-                gap: 5px;
-                background: rgba(0,0,0,0.3);
-                padding: 5px;
-                border-radius: 10px;
-            }
-            #theme-switcher button {
-                font-family: 'Montserrat', sans-serif;
-                background: rgba(255,255,255,0.1);
-                color: #fff;
-                border: 1px solid rgba(255,255,255,0.2);
-                padding: 8px 12px;
-                border-radius: 8px;
-                cursor: pointer;
-                transition: background 0.3s;
-            }
-            #theme-switcher button:hover {
-                background: rgba(255,255,255,0.3);
-            }
-        `;
-        const styleSheet = document.createElement("style");
-        styleSheet.innerText = styles;
-        document.head.appendChild(styleSheet);
-
-        const switcher = document.createElement('div');
-        switcher.id = 'theme-switcher';
-        switcher.innerHTML = `
-            <button data-theme="constellation">Clear</button>
-            <button data-theme="rain">Rain</button>
-            <button data-theme="snow">Snow</button>
-            <button data-theme="thunder">Storm</button>
-        `;
-        document.body.appendChild(switcher);
-
-        switcher.addEventListener('click', (e) => {
-            if (e.target.tagName !== 'BUTTON') return;
-            const theme = e.target.dataset.theme;
-            if (theme === 'constellation') initConstellationTheme(150);
-            else if (theme === 'rain') initRainTheme();
-            else if (theme === 'snow') initSnowTheme();
-            else if (theme === 'thunder') initThunderstormTheme();
-        });
-    }
-
     getWeatherTheme();
-    addThemeSwitcher(); // Add the switcher
 });
